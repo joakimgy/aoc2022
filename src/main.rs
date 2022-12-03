@@ -9,4 +9,6 @@ fn main() {
     //println!("Day 1_2 answer: {day1_2}");
     let day2_1 = day2::task1();
     println!("Day 2_1 answer: {day2_1}");
+    let day2_2 = day2::task2();
+    println!("Day 2_2 answer: {day2_2}");
 }

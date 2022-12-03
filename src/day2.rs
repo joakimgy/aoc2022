@@ -14,10 +14,6 @@ pub fn task1() -> i32 {
     return strategy_guide.iter().map(|&row| points_of_round(row)).sum();
 }
 
-pub fn task2() -> i32 {
-    return 0;
-}
-
 fn points_of_round(round: &str) -> i32 {
     let round_shapes: Vec<&str> = round.split(' ').collect();
     let opponent_shape = round_shapes[0];
@@ -64,4 +60,63 @@ fn points_from_round(your_shape: &str, opponent_shape: &str) -> i32 {
         println!("Case not covered ({your_shape} - {opponent_shape})");
         return 0;
     }
+}
+
+pub fn task2() -> i32 {
+    let input = utils::read_file("src/day2.txt");
+    let strategy_guide: Vec<&str> = input.split('\n').collect();
+    return strategy_guide
+        .iter()
+        .map(|&row| play_round_and_calc_points(row))
+        .sum();
+}
+
+fn play_round_and_calc_points(round: &str) -> i32 {
+    let round_shapes: Vec<&str> = round.split(' ').collect();
+    let opponent_shape = round_shapes[0];
+    let strategy_shape = round_shapes[1];
+    let your_shape = find_your_move(strategy_shape, opponent_shape);
+    let points = points_from_round(&your_shape, opponent_shape) + points_from_move(&your_shape);
+    //println!("{opponent_shape} - {your_shape} ({points }) - strategy {strategy_shape}");
+    return points;
+}
+
+const LOSE: &str = "X";
+const DRAW: &str = "Y";
+const WIN: &str = "Z";
+fn find_your_move(strategy_shape: &str, opponent_shape: &str) -> String {
+    return match strategy_shape {
+        LOSE => match opponent_shape {
+            OPP_PAPER => ROCK,
+            OPP_ROCK => SCISSORS,
+            OPP_SCISSORS => PAPER,
+            _ => {
+                println!("Invalid opponent shape");
+                "-"
+            }
+        },
+        DRAW => match opponent_shape {
+            OPP_PAPER => PAPER,
+            OPP_ROCK => ROCK,
+            OPP_SCISSORS => SCISSORS,
+            _ => {
+                println!("Invalid opponent shape");
+                "-"
+            }
+        },
+        WIN => match opponent_shape {
+            OPP_PAPER => SCISSORS,
+            OPP_ROCK => PAPER,
+            OPP_SCISSORS => ROCK,
+            _ => {
+                println!("Invalid opponent shape");
+                "-"
+            }
+        },
+        _ => {
+            println!("Invalid shape");
+            "-"
+        }
+    }
+    .to_owned();
 }
