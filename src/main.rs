@@ -1,12 +1,7 @@
-use std::fs;
-use std::path::Path;
+mod day1;
+pub mod utils;
 
 fn main() {
-    let input = read_file("src/input.txt");
-}
-
-fn read_file(path: &str) -> String {
-    let contents = fs::read_to_string(path).expect("Should have been able to read the file");
-    println!("With input:\n{contents}");
-    return contents;
+    let day1_1 = day1::day1_task1();
+    println!("Day 1_1 answer: {day1_1}")
 }
