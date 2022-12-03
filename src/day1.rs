@@ -1,5 +1,4 @@
-use std::path::Iter;
-
+#![allow(dead_code)]
 use crate::utils;
 
 pub fn day1_task1() -> i32 {
