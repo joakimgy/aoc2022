@@ -1,6 +1,7 @@
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 pub mod utils;
 
 fn main() {
@@ -12,8 +13,12 @@ fn main() {
     // println!("Day 2_1 answer: {day2_1}");
     // let day2_2 = day2::task2();
     // println!("Day 2_2 answer: {day2_2}");
-    let day3_1 = day3::task1();
+    /* let day3_1 = day3::task1();
     println!("Day 3_1 answer: {day3_1}");
     let day3_2 = day3::task2();
-    println!("Day 3_2 answer: {day3_2}");
+    println!("Day 3_2 answer: {day3_2}"); */
+    let day4_1 = day4::task1();
+    println!("Day 4_1 answer: {day4_1}");
+    let day4_2 = day4::task2();
+    println!("Day 4_2 answer: {day4_2}");
 }
