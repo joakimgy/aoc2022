@@ -12,10 +12,30 @@ pub fn task1() -> i32 {
     let mut stacks = init_stack_from_crates(&crates);
     populate_stack_with_crates(&mut stacks, &crates);
 
+    move_n_crates(1usize, 2usize, 1usize, &mut stacks);
+    move_n_crates(3usize, 1usize, 3usize, &mut stacks);
+    move_n_crates(2usize, 2usize, 1usize, &mut stacks);
+    move_n_crates(1usize, 1usize, 2usize, &mut stacks);
+
     print_top_of_stacks(&stacks);
     print_instructions(instructions);
 
     return 0;
+}
+
+fn move_n_crates(n: usize, from: usize, to: usize, stacks: &mut HashMap<usize, Vec<char>>) {
+    for _ in 0..n {
+        move_crate(from, to, stacks);
+    }
+}
+
+fn move_crate(from: usize, to: usize, stacks: &mut HashMap<usize, Vec<char>>) {
+    let mut from_stack = stacks.get(&from).expect("Stack does not exist").to_owned();
+    let crate_to_move = from_stack.pop().expect("Crate does not exist");
+    stacks.insert(from, from_stack);
+    let mut to_stack = stacks.get(&to).expect("Stack does not exist").to_owned();
+    to_stack.push(crate_to_move);
+    stacks.insert(to, to_stack);
 }
 
 fn populate_stack_with_crates(stacks: &mut HashMap<usize, Vec<char>>, crates: &Vec<&str>)  {
