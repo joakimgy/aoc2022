@@ -10,9 +10,15 @@ pub fn task1() -> i32 {
     let instructions: Vec<&str> = rows[1].split('\n').collect();
 
     let mut stacks = init_stack_from_crates(&crates);
+    populate_stack_with_crates(&mut stacks, &crates);
 
-    print_stacks(&stacks);
+    print_top_of_stacks(&stacks);
+    print_instructions(instructions);
 
+    return 0;
+}
+
+fn populate_stack_with_crates(stacks: &mut HashMap<usize, Vec<char>>, crates: &Vec<&str>)  {
     let re = Regex::new(r"\[(.*?)\]").unwrap();
 
     for (i, c) in crates.iter().enumerate().rev() {
@@ -20,31 +26,22 @@ pub fn task1() -> i32 {
         if length - 1 == i {
             continue;
         }
-        println!("\nCrate: {c}");
         let chars: Vec<char> = c.chars().collect();
         let columns = chars.chunks(4);
         for (j, coc) in columns.enumerate() {
             let parsed: String = coc.iter().collect();
             let index = j + 1;
-            println!("col {index}: {parsed}");
             match re.find(&parsed) {
                 Some(res) => {
                     let r: Vec<char> = res.as_str().chars().collect();
                     let letter = r[1];
                     let item = item_to_add_to_stack(&stacks, &index, letter);
                     stacks.insert(index, item);
-                    println!("Match: {letter}");
                 }
-                None => {
-                    println!("No match");
-                }
+                None => {}
             };
         }
     }
-    print_top_of_stacks(&stacks);
-    print_instructions(instructions);
-
-    return 0;
 }
 
 fn init_stack_from_crates(crates: &Vec<&str>) -> HashMap<usize, Vec<char>> {
@@ -64,13 +61,6 @@ fn item_to_add_to_stack(stacks: &HashMap<usize, Vec<char>>, key: &usize, value: 
     let mut copy_value = current_value.to_owned();
     copy_value.push(value);
     return copy_value;
-}
-
-fn print_stacks(stacks: &HashMap<usize, Vec<char>>) {
-    for (i, v) in stacks {
-        let length = v.len();
-        println!("Key: {i} with length {length}");
-    }
 }
 
 fn print_top_of_stacks(stacks: &HashMap<usize, Vec<char>>) {
