@@ -8,9 +8,7 @@ pub fn task1() -> usize {
     for i in 0..input.len() {
         match input.get(i..(i + 4)) {
             Some(chars) => {
-                let c: String = chars.iter().collect();
                 if has_unique_elements(chars.iter()) {
-                    //println!("Result: {c}");
                     return i + 4;
                 }
             }
@@ -23,6 +21,19 @@ pub fn task1() -> usize {
 }
 
 pub fn task2() -> usize {
+    let input: Vec<char> = utils::read_file("src/day6.txt").chars().collect();
+    for i in 0..input.len() {
+        match input.get(i..(i + 14)) {
+            Some(chars) => {
+                if has_unique_elements(chars.iter()) {
+                    return i + 14;
+                }
+            }
+            None => {
+                println!("Could not get slice")
+            }
+        };
+    }
     return 0;
 }
 
