@@ -9,13 +9,7 @@ pub fn task1() -> i32 {
     let crates: Vec<&str> = rows[0].split('\n').collect();
     let instructions: Vec<&str> = rows[1].split('\n').collect();
 
-    let mut stacks: HashMap<usize, Vec<char>> = HashMap::new();
-
-    let stack_indexes = crates_to_stack_indexes(&crates);
-    for index in stack_indexes {
-        let empty_list: Vec<char> = Vec::new();
-        stacks.insert(index, empty_list);
-    }
+    let mut stacks = init_stack_from_crates(&crates);
 
     print_stacks(&stacks);
 
@@ -53,6 +47,18 @@ pub fn task1() -> i32 {
     return 0;
 }
 
+fn init_stack_from_crates(crates: &Vec<&str>) -> HashMap<usize, Vec<char>> {
+    let mut stacks: HashMap<usize, Vec<char>> = HashMap::new();
+
+    let stack_indexes = stack_indexes_from_crates(crates);
+    for index in stack_indexes {
+        let empty_list: Vec<char> = Vec::new();
+        stacks.insert(index, empty_list);
+    }
+
+    return stacks;
+}
+
 fn item_to_add_to_stack(stacks: &HashMap<usize, Vec<char>>, key: &usize, value: char) -> Vec<char> {
     let current_value = stacks.get(key).expect("Stack key should not be empty");
     let mut copy_value = current_value.to_owned();
@@ -88,7 +94,7 @@ fn print_instructions(instructions: Vec<&str>) {
     }
 }
 
-fn crates_to_stack_indexes(crates: &Vec<&str>) -> Vec<usize> {
+fn stack_indexes_from_crates(crates: &Vec<&str>) -> Vec<usize> {
     let stack_indexes = crates.last().expect("List should not be empty");
     let stack_index_chars: Vec<char> = stack_indexes.chars().filter(|&c| c != ' ').collect();
     return stack_index_chars
