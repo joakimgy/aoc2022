@@ -3,10 +3,11 @@ mod day2;
 mod day3;
 mod day4;
 mod day5;
+mod day6;
 pub mod utils;
 
 fn main() {
-    day(5);
+    day(6);
 }
 
 fn day(day: i32) {
@@ -40,6 +41,12 @@ fn day(day: i32) {
             println!("Day 5_1 answer: {day5_1}");
             let day5_2 = day5::task2();
             println!("Day 5_2 answer: {day5_2}");
+        }
+        6 => {
+            let day6_1 = day6::task1();
+            println!("Day 6_1 answer: {day6_1}");
+            let day6_2 = day6::task2();
+            println!("Day 6_2 answer: {day6_2}");
         }
         _ => return,
     }
