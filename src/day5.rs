@@ -4,7 +4,7 @@ use itertools::Itertools;
 use regex::Regex;
 use std::collections::HashMap;
 
-pub fn task1() -> i32 {
+pub fn task1() -> String {
     let input = utils::read_file("src/day5.txt");
     let rows: Vec<&str> = utils::split_on_newline(input.as_str());
     let crates: Vec<&str> = rows[0].split('\n').collect();
@@ -13,14 +13,31 @@ pub fn task1() -> i32 {
     let mut stacks = init_stack_from_crates(&crates);
     populate_stack_with_crates(&mut stacks, &crates);
 
-    print_top_of_stacks(&stacks);
+    //print_top_of_stacks(&stacks);
 
     let parsed_instructions = parse_instructions(&instructions);
     execute_instructions(&parsed_instructions, &mut stacks);
 
-    print_top_of_stacks(&stacks);
+    let top_of_stack: String = get_top_of_stacks(&stacks).iter().collect();
+    return top_of_stack;
+}
 
-    return 0;
+pub fn task2() -> String {
+    let input = utils::read_file("src/day5.txt");
+    let rows: Vec<&str> = utils::split_on_newline(input.as_str());
+    let crates: Vec<&str> = rows[0].split('\n').collect();
+    let instructions: Vec<&str> = rows[1].split('\n').collect();
+
+    let mut stacks = init_stack_from_crates(&crates);
+    populate_stack_with_crates(&mut stacks, &crates);
+
+    //print_top_of_stacks(&stacks);
+
+    let parsed_instructions = parse_instructions(&instructions);
+    execute_instructions_task2(&parsed_instructions, &mut stacks);
+
+    let top_of_stack: String = get_top_of_stacks(&stacks).iter().collect();
+    return top_of_stack;
 }
 
 struct Instruction {
@@ -32,6 +49,20 @@ struct Instruction {
 fn execute_instructions(instructions: &Vec<Instruction>, stacks: &mut HashMap<usize, Vec<char>>) {
     for instruction in instructions {
         move_n_crates(
+            instruction.quantity,
+            instruction.from,
+            instruction.to,
+            stacks,
+        );
+    }
+}
+
+fn execute_instructions_task2(
+    instructions: &Vec<Instruction>,
+    stacks: &mut HashMap<usize, Vec<char>>,
+) {
+    for instruction in instructions {
+        move_n_crates_at_once(
             instruction.quantity,
             instruction.from,
             instruction.to,
@@ -71,6 +102,15 @@ fn parse_instructions(instructions: &Vec<&str>) -> Vec<Instruction> {
             }
         })
         .collect();
+}
+
+fn move_n_crates_at_once(n: usize, from: usize, to: usize, stacks: &mut HashMap<usize, Vec<char>>) {
+    let mut from_stack = stacks.get(&from).expect("Stack does not exist").to_owned();
+    let mut crates_to_move = from_stack.split_off(from_stack.len() - n);
+    stacks.insert(from, from_stack);
+    let mut to_stack = stacks.get(&to).expect("Stack does not exist").to_owned();
+    to_stack.append(&mut crates_to_move);
+    stacks.insert(to, to_stack);
 }
 
 fn move_n_crates(n: usize, from: usize, to: usize, stacks: &mut HashMap<usize, Vec<char>>) {
@@ -147,17 +187,26 @@ fn print_stacks(stacks: &HashMap<usize, Vec<char>>) {
     }
 }
 
-fn print_top_of_stacks(stacks: &HashMap<usize, Vec<char>>) {
-    println!("Top of stack:");
+fn get_top_of_stacks(stacks: &HashMap<usize, Vec<char>>) -> Vec<char> {
     let keys = stacks.keys().sorted();
+    let mut top_of_stacks: Vec<char> = Vec::new();
     for key in keys {
         let v = stacks.get(key).expect("Key does not exist");
         match v.last() {
             Some(res) => {
-                print!("{res}");
+                top_of_stacks.push(*res);
             }
             None => {}
         }
+    }
+    return top_of_stacks;
+}
+
+fn print_top_of_stacks(stacks: &HashMap<usize, Vec<char>>) {
+    let top = get_top_of_stacks(stacks);
+    println!("Top of stack:");
+    for c in top {
+        print!("{c}");
     }
     println!("");
 }
@@ -186,8 +235,4 @@ fn stack_indexes_from_crates(crates: &Vec<&str>) -> Vec<usize> {
         .iter()
         .map(|i| utils::char_to_usize(&i))
         .collect();
-}
-
-pub fn task2() -> i32 {
-    return 0;
 }
