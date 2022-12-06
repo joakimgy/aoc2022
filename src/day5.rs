@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 use crate::utils;
+use itertools::Itertools;
 use regex::Regex;
 use std::collections::HashMap;
 
@@ -12,15 +13,64 @@ pub fn task1() -> i32 {
     let mut stacks = init_stack_from_crates(&crates);
     populate_stack_with_crates(&mut stacks, &crates);
 
-    move_n_crates(1usize, 2usize, 1usize, &mut stacks);
-    move_n_crates(3usize, 1usize, 3usize, &mut stacks);
-    move_n_crates(2usize, 2usize, 1usize, &mut stacks);
-    move_n_crates(1usize, 1usize, 2usize, &mut stacks);
+    print_top_of_stacks(&stacks);
+
+    let parsed_instructions = parse_instructions(&instructions);
+    execute_instructions(&parsed_instructions, &mut stacks);
 
     print_top_of_stacks(&stacks);
-    print_instructions(instructions);
 
     return 0;
+}
+
+struct Instruction {
+    from: usize,
+    to: usize,
+    quantity: usize,
+}
+
+fn execute_instructions(instructions: &Vec<Instruction>, stacks: &mut HashMap<usize, Vec<char>>) {
+    for instruction in instructions {
+        move_n_crates(
+            instruction.quantity,
+            instruction.from,
+            instruction.to,
+            stacks,
+        );
+    }
+}
+
+fn parse_instructions(instructions: &Vec<&str>) -> Vec<Instruction> {
+    return instructions
+        .iter()
+        .filter(|&&i| i != "")
+        .map(|&i| {
+            let l: Vec<&str> = i.split(" ").collect();
+            let quantity = l
+                .get(1)
+                .expect("Quantity not found")
+                .parse::<usize>()
+                .unwrap();
+
+            let from = l
+                .get(3)
+                .expect("Quantity not found")
+                .parse::<usize>()
+                .unwrap();
+
+            let to = l
+                .get(5)
+                .expect("Quantity not found")
+                .parse::<usize>()
+                .unwrap();
+
+            Instruction {
+                from: from,
+                to: to,
+                quantity: quantity,
+            }
+        })
+        .collect();
 }
 
 fn move_n_crates(n: usize, from: usize, to: usize, stacks: &mut HashMap<usize, Vec<char>>) {
@@ -38,7 +88,7 @@ fn move_crate(from: usize, to: usize, stacks: &mut HashMap<usize, Vec<char>>) {
     stacks.insert(to, to_stack);
 }
 
-fn populate_stack_with_crates(stacks: &mut HashMap<usize, Vec<char>>, crates: &Vec<&str>)  {
+fn populate_stack_with_crates(stacks: &mut HashMap<usize, Vec<char>>, crates: &Vec<&str>) {
     let re = Regex::new(r"\[(.*?)\]").unwrap();
 
     for (i, c) in crates.iter().enumerate().rev() {
@@ -83,7 +133,7 @@ fn item_to_add_to_stack(stacks: &HashMap<usize, Vec<char>>, key: &usize, value: 
     return copy_value;
 }
 
-fn print_top_of_stacks(stacks: &HashMap<usize, Vec<char>>) {
+fn print_stacks(stacks: &HashMap<usize, Vec<char>>) {
     for (i, v) in stacks {
         let length = v.len();
         match v.last() {
@@ -97,10 +147,35 @@ fn print_top_of_stacks(stacks: &HashMap<usize, Vec<char>>) {
     }
 }
 
-fn print_instructions(instructions: Vec<&str>) {
+fn print_top_of_stacks(stacks: &HashMap<usize, Vec<char>>) {
+    println!("Top of stack:");
+    let keys = stacks.keys().sorted();
+    for key in keys {
+        let v = stacks.get(key).expect("Key does not exist");
+        match v.last() {
+            Some(res) => {
+                print!("{res}");
+            }
+            None => {}
+        }
+    }
+    println!("");
+}
+
+fn print_raw_instructions(instructions: &Vec<&str>) {
     println!("");
     for i in instructions {
         println!("Instruction {i}");
+    }
+}
+
+fn print_instructions(instructions: &Vec<Instruction>) {
+    println!("");
+    for i in instructions {
+        let quantity = i.quantity;
+        let from = i.from;
+        let to = i.to;
+        println!("Instruction {quantity} from {from} to {to}");
     }
 }
 
